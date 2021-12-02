@@ -1,0 +1,8 @@
+{
+  "name": "Sup Chat",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "fc2ca5b9"
+}

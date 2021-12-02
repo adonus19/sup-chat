@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Sup Chat",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
