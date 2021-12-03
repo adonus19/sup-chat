@@ -1,4 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AlertController, LoadingController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -6,10 +10,87 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  @Input() name: string;
 
-  constructor() { }
+  loginForm: FormGroup;
+  needsToSignUp = false;
+  signUpOrLoginText = 'Not a member? Click here to sign up!';
+  btnText = 'Login';
 
-  ngOnInit() { }
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private alertController: AlertController,
+    private loader: LoadingController,
+    private auth: AuthService
+  ) { }
 
+  ngOnInit() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  get email() {
+    return this.loginForm.get('email');
+  }
+  get password() {
+    return this.loginForm.get('password');
+  }
+  get firstName() {
+    return this.loginForm.get('firstName');
+  }
+  get lastName() {
+    return this.loginForm.get('lastName');
+  }
+
+  async signUp() {
+    const loading = await this.loader.create();
+    await loading.present();
+    this.auth.signUp(this.loginForm.value)
+      .then(user => {
+        loading.dismiss();
+        this.router.navigateByUrl('/chat', { replaceUrl: true });
+      },
+        async err => {
+          loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Sign up failed',
+            message: err.message,
+            buttons: ['Ok']
+          });
+          await alert.present();
+        });
+  }
+
+  async signIn() {
+    const loading = await this.loader.create();
+    await loading.present();
+
+    this.auth.signIn(this.loginForm.value)
+      .then(user => {
+        loading.dismiss();
+        this.router.navigateByUrl('/chat', { replaceUrl: true });
+      },
+        async err => {
+          loading.dismiss();
+          const alert = await this.alertController.create({
+            header: 'Login failed',
+            message: err.message,
+            buttons: ['Ok']
+          });
+          await alert.present();
+        });
+  }
+
+  loginOrSignUp() {
+    this.needsToSignUp = !this.needsToSignUp;
+    if (this.needsToSignUp) {
+      this.signUpOrLoginText = 'Already a member? Click here to login!';
+      this.btnText = 'Sign Up';
+    } else {
+      this.signUpOrLoginText = 'Not a member? Click here to sign up!';
+      this.btnText = 'Login';
+    }
+  }
 }

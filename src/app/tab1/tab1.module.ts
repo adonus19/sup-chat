@@ -15,6 +15,7 @@ import { Tab1PageRoutingModule } from './tab1-routing.module';
     LoginComponentModule,
     Tab1PageRoutingModule
   ],
-  declarations: [Tab1Page]
+  declarations: [Tab1Page],
+  providers: []
 })
 export class Tab1PageModule { }

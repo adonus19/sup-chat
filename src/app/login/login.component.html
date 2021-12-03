@@ -1,4 +1,30 @@
-<div id="container">
-  <strong>{{ name }}</strong>
-  <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-</div>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Sup Chat Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="loginForm">
+    <ion-item>
+      <ion-input placeholder="example@gmail.com" formControlName="email" autofocus="true" clearInput="true"
+        type="email"></ion-input>
+    </ion-item>
+    <div *ngIf="email.touched && email.errors" class="errors">
+      <span *ngIf="email.errors?.required">Email is required</span>
+      <span *ngIf="email.errors?.email">Email is invalid</span>
+    </div>
+
+    <ion-item>
+      <ion-input placeholder="aReallyToughPassword" type="password" formControlName="password" clearInput="true">
+      </ion-input>
+    </ion-item>
+    <div *ngIf="password.touched && password.errors" class="errors">
+      <span *ngIf="password.errors?.required">Password is required</span>
+      <span *ngIf="password.errors?.minlength">Password needs to be 6 characters</span>
+    </div>
+  </form>
+
+  <ion-button (click)="signIn()" expand="full" color="secondary">Sign in</ion-button>
+  <ion-button fill="clear" (click)="loginOrSignUp()">Not a member? Click here to sign up!</ion-button>
+</ion-content>
