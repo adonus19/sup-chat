@@ -13,15 +13,19 @@ export interface User {
 })
 export class AuthService {
 
-  currentUser: User;
+  private _currentUser: User;
 
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore
   ) {
     this.afAuth.onAuthStateChanged(user => {
-      this.currentUser = user;
+      this._currentUser = user;
     });
+  }
+
+  get currentUser() {
+    return this._currentUser;
   }
 
   async signUp({ email, password, firstName, lastName }): Promise<any> {

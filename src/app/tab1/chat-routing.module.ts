@@ -6,20 +6,20 @@ import { hasCustomClaim, redirectUnauthorizedTo, redirectLoggedInTo, canActivate
 import { ChatPage } from './chat.page';
 
 const adminOnly = () => hasCustomClaim('admin');
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
-const redirectLoggedInToChat = () => redirectLoggedInTo(['chat']);
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['']);
+const redirectLoggedInToChat = () => redirectLoggedInTo(['room']);
 
 const routes: Routes = [
   {
     path: '',
+    loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
+    ...canActivate(redirectLoggedInToChat)
+  },
+  {
+    path: 'room',
     component: ChatPage,
     ...canActivate(redirectUnauthorizedToLogin)
   },
-  {
-    path: 'login',
-    loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
-    ...canActivate(redirectLoggedInToChat)
-  }
 ];
 
 @NgModule({
