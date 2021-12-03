@@ -1,12 +1,13 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Sup Chat Login</ion-title>
+    <ion-title>Sup Chat {{ btnText }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding bottom-btn">
   <form [formGroup]="loginForm">
     <ion-item>
+      <ion-label position="floating">Email</ion-label>
       <ion-input placeholder="example@gmail.com" formControlName="email" autofocus="true" clearInput="true"
         type="email"></ion-input>
     </ion-item>
@@ -16,6 +17,7 @@
     </div>
 
     <ion-item>
+      <ion-label position="floating">Password</ion-label>
       <ion-input placeholder="aReallyToughPassword" type="password" formControlName="password" clearInput="true">
       </ion-input>
     </ion-item>
@@ -23,8 +25,30 @@
       <span *ngIf="password.errors?.required">Password is required</span>
       <span *ngIf="password.errors?.minlength">Password needs to be 6 characters</span>
     </div>
+
+    <div *ngIf="needsToSignUp">
+      <ion-item>
+        <ion-label position="floating">First Name</ion-label>
+        <ion-input placeholder="John" type="text" formControlName="firstName" clearInput="true">
+        </ion-input>
+      </ion-item>
+      <div *ngIf="firstName.touched && firstName.errors" class="errors">
+        <span *ngIf="firstName.errors?.required">First name is required</span>
+      </div>
+    </div>
+
+    <div *ngIf="needsToSignUp">
+      <ion-item>
+        <ion-label position="floating">Last Name</ion-label>
+        <ion-input placeholder="Smith" type="text" formControlName="lastName" clearInput="true">
+        </ion-input>
+      </ion-item>
+      <div *ngIf="lastName.touched && lastName.errors" class="errors">
+        <span *ngIf="lastName.errors?.required">Last name is required</span>
+      </div>
+    </div>
   </form>
 
-  <ion-button (click)="signIn()" expand="full" color="secondary">Sign in</ion-button>
-  <ion-button fill="clear" (click)="loginOrSignUp()">Not a member? Click here to sign up!</ion-button>
+  <ion-button (click)="onSubmit()" expand="block" class="top-btn">{{ btnText }}</ion-button>
+  <ion-button fill="clear" (click)="loginOrSignUp()">{{ signUpOrLoginText }}</ion-button>
 </ion-content>

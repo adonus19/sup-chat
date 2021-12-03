@@ -24,11 +24,11 @@ export class AuthService {
     });
   }
 
-  async signUp({ email, password, name }): Promise<any> {
+  async signUp({ email, password, firstName, lastName }): Promise<any> {
     const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
     const uid = credential.user.uid;
 
-    return this.afs.doc(`users/${uid}`).set({ uid, email: credential.user.email, displayName: name });
+    return this.afs.doc(`users/${uid}`).set({ uid, email: credential.user.email, displayName: `${firstName} ${lastName}` });
   }
 
   signIn({ email, password }): Promise<any> {

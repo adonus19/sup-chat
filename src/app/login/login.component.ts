@@ -44,11 +44,20 @@ export class LoginComponent implements OnInit {
     return this.loginForm.get('lastName');
   }
 
+  onSubmit() {
+    if (this.needsToSignUp) {
+      this.signUp();
+    } else {
+      this.signIn();
+    }
+  }
+
   async signUp() {
     const loading = await this.loader.create();
     await loading.present();
     this.auth.signUp(this.loginForm.value)
       .then(user => {
+        console.log(user);
         loading.dismiss();
         this.router.navigateByUrl('/chat', { replaceUrl: true });
       },
@@ -69,6 +78,7 @@ export class LoginComponent implements OnInit {
 
     this.auth.signIn(this.loginForm.value)
       .then(user => {
+        console.log(user);
         loading.dismiss();
         this.router.navigateByUrl('/chat', { replaceUrl: true });
       },
@@ -88,6 +98,8 @@ export class LoginComponent implements OnInit {
     if (this.needsToSignUp) {
       this.signUpOrLoginText = 'Already a member? Click here to login!';
       this.btnText = 'Sign Up';
+      this.loginForm.addControl('firstName', this.fb.control('', [Validators.required]));
+      this.loginForm.addControl('lastName', this.fb.control('', [Validators.required]));
     } else {
       this.signUpOrLoginText = 'Not a member? Click here to sign up!';
       this.btnText = 'Login';

@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { hasCustomClaim, redirectUnauthorizedTo, redirectLoggedInTo, canActivate } from '@angular/fire/compat/auth-guard';
 
 
-import { Tab1Page } from './tab1.page';
+import { ChatPage } from './chat.page';
 
 const adminOnly = () => hasCustomClaim('admin');
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
@@ -12,7 +12,7 @@ const redirectLoggedInToChat = () => redirectLoggedInTo(['chat']);
 const routes: Routes = [
   {
     path: '',
-    component: Tab1Page,
+    component: ChatPage,
     ...canActivate(redirectUnauthorizedToLogin)
   },
   {
@@ -28,4 +28,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class Tab1PageRoutingModule { }
+export class ChatPageRoutingModule { }
