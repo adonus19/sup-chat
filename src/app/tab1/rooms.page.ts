@@ -29,9 +29,7 @@ export class RoomsPage implements OnInit {
   ngOnInit() {
     this.currentUID = this.auth.currentUser.uid;
     this.chatService.getRooms().subscribe(() => {
-      console.log('there was an update');
       this.chatService.getRoomNames().subscribe(names => {
-        console.log(names);
         this.rooms = names;
       });
     });

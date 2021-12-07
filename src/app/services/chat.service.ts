@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import * as firebase from 'firebase/firestore';
-import { merge, Observable } from "rxjs";
-import { concat, map, mergeAll, switchMap } from 'rxjs/operators';
+import { Observable } from "rxjs";
+import { map, switchMap } from 'rxjs/operators';
 import { User } from "./auth.service";
 
 export interface Message {
@@ -21,14 +21,37 @@ export interface Message {
 export class ChatService {
 
   users: User[];
+  collectionPaths: string[];
 
   constructor(
     private afs: AngularFirestore,
     private cloudFunctions: AngularFireFunctions
   ) { }
 
-  addChatRoom(name: string, uid: string) {
-    return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${name}`).add({});
+  addChatRoom(name: string, uid: string, users: User[]) {
+    return this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').get()
+      .pipe(
+        switchMap(doc => {
+          const chats = (doc.data() as { chats: string[] });
+          chats.chats.push(name);
+          return this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').update({ chats: chats.chats })
+        }),
+        switchMap(() => {
+          const updatedUsers = this.updateUsersRooms(users, name);
+          const batch = this.afs.firestore.batch();
+          for (const user of updatedUsers) {
+            const ref = this.afs.collection('users').doc(user.uid).ref;
+            batch.update(ref, { rooms: user.rooms });
+          }
+          return batch.commit();
+        }),
+        switchMap(() => {
+          return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${name}`).add({
+            createdBy: uid,
+            users
+          });
+        })
+      ).subscribe();
   }
 
   getRoomNames() {
@@ -37,6 +60,7 @@ export class ChatService {
     return collections('').pipe(
       map(roomPaths => {
         console.log(roomPaths);
+        this.collectionPaths = roomPaths;
         let names = [];
         roomPaths.forEach(path => {
           let name = path.split('/')[2];
@@ -48,10 +72,10 @@ export class ChatService {
   }
 
   getRooms(): Observable<any> {
-    this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').snapshotChanges().subscribe(changes => {
-      console.log(changes);
-      console.log(changes.payload.data());
-    });
+    // this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').snapshotChanges().subscribe(changes => {
+    //   console.log(changes);
+    //   console.log(changes.payload.data());
+    // });
     return this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').snapshotChanges();
 
 
@@ -109,5 +133,12 @@ export class ChatService {
       }
     }
     return 'Deleted';
+  }
+
+  private updateUsersRooms(users: User[], chatName: string) {
+    for (const user of users) {
+      user.rooms.push(chatName);
+    }
+    return users;
   }
 }

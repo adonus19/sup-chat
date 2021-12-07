@@ -1,5 +1,10 @@
 <ion-header [translucent]="true" collapse="condense">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="cancel()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title size="small">
       New Room
     </ion-title>
@@ -22,8 +27,8 @@
     <ion-item *ngFor="let user of users; let i = index">
       <ion-icon name="person-circle-outline" slot="start"></ion-icon>
       <ion-label>{{ user.displayName | titlecase}}</ion-label>
-      <ion-radio-group (ionChange)="addUser(user)">
-        <ion-radio slot="end"></ion-radio>
+      <ion-radio-group allowEmptySelection="true" (ionChange)="addUser($event, user)">
+        <ion-radio slot="end" value="true"></ion-radio>
       </ion-radio-group>
     </ion-item>
   </ion-list>

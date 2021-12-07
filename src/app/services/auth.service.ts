@@ -37,7 +37,12 @@ export class AuthService implements OnInit {
     const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
     const uid = credential.user.uid;
 
-    return this.afs.doc(`users/${uid}`).set({ uid, email: credential.user.email, displayName: `${firstName} ${lastName}` });
+    return this.afs.doc(`users/${uid}`).set({
+      uid,
+      email: credential.user.email,
+      displayName: `${firstName} ${lastName}`,
+      rooms: []
+    });
   }
 
   signIn({ email, password }): Promise<any> {

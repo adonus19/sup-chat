@@ -23,12 +23,20 @@ export class AddChatPage {
     });
   }
 
-  addUser(user: User) {
-    this.selectedUsers.push(user);
+  addUser(event, user: User) {
+    if (event.detail.value) {
+      this.selectedUsers.push(user);
+    } else {
+      this.selectedUsers.splice(this.selectedUsers.indexOf(user), 1);
+    }
   }
 
   async createChatRoom() {
-    await this.chatService.addChatRoom(this.chatName, this.auth.currentUser.uid);
+    await this.chatService.addChatRoom(this.chatName, this.auth.currentUser.uid, this.selectedUsers);
+    this.modal.dismiss();
+  }
+
+  cancel() {
     this.modal.dismiss();
   }
 

@@ -78,7 +78,6 @@ export class LoginComponent implements OnInit {
 
     this.auth.signIn(this.loginForm.value)
       .then(user => {
-        console.log(user);
         loading.dismiss();
         this.router.navigate(['tabs/rooms/rooms'], { replaceUrl: true });
       },
