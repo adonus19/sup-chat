@@ -3,21 +3,21 @@ import { RouterModule, Routes } from '@angular/router';
 import { hasCustomClaim, redirectUnauthorizedTo, redirectLoggedInTo, canActivate } from '@angular/fire/compat/auth-guard';
 
 
-import { ChatPage } from './chat.page';
+import { RoomsPage } from './rooms.page';
 
 const adminOnly = () => hasCustomClaim('admin');
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['']);
-const redirectLoggedInToChat = () => redirectLoggedInTo(['room']);
+const redirectLoggedInToRooms = () => redirectLoggedInTo(['rooms']);
 
 const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
-    ...canActivate(redirectLoggedInToChat)
+    ...canActivate(redirectLoggedInToRooms)
   },
   {
-    path: 'room',
-    component: ChatPage,
+    path: 'rooms',
+    component: RoomsPage,
     ...canActivate(redirectUnauthorizedToLogin)
   },
 ];
@@ -28,4 +28,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class ChatPageRoutingModule { }
+export class RoomsPageRoutingModule { }

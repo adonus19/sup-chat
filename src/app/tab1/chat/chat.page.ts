@@ -2,11 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service';
-import { ChatService } from '../services/chat.service';
+import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
-  selector: 'app-tab1',
+  selector: 'app-chat',
   templateUrl: 'chat.page.html',
   styleUrls: ['chat.page.scss']
 })

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit } from "@angular/core";
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 
@@ -6,12 +6,13 @@ export interface User {
   uid: string;
   email: string;
   displayName: string;
+  rooms?: string[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnInit {
 
   private _currentUser: User;
 
@@ -22,6 +23,10 @@ export class AuthService {
     this.afAuth.onAuthStateChanged(user => {
       this._currentUser = user;
     });
+  }
+
+  ngOnInit() {
+    this.afAuth.setPersistence('local').then(() => { });
   }
 
   get currentUser() {
