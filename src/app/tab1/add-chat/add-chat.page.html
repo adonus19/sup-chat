@@ -1,0 +1,31 @@
+<ion-header [translucent]="true" collapse="condense">
+  <ion-toolbar>
+    <ion-title size="small">
+      New Room
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="createChatRoom()">
+        Create
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <ion-item class="ion-margin-bottom">
+    <ion-label position="floating">Chat Name</ion-label>
+    <ion-input clearInput [(ngModel)]="chatName"></ion-input>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let user of users; let i = index">
+      <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+      <ion-label>{{ user.displayName | titlecase}}</ion-label>
+      <ion-radio-group (ionChange)="addUser(user)">
+        <ion-radio slot="end"></ion-radio>
+      </ion-radio-group>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

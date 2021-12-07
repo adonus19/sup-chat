@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { IonContent, ModalController } from '@ionic/angular';
+import { Observable, Subscriber, Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { ChatService } from '../services/chat.service';
+import { AddChatPage } from './add-chat/add-chat.page';
 
 @Component({
   selector: 'app-tab1',
@@ -14,28 +15,33 @@ export class RoomsPage implements OnInit {
 
   @ViewChild(IonContent) content: IonContent;
 
-  rooms: Observable<any[]>;
+  rooms = [];
   newMsg = '';
   currentUID: string;
 
   constructor(
     private auth: AuthService,
     private chatService: ChatService,
-    private router: Router
+    private router: Router,
+    private modal: ModalController
   ) { }
 
   ngOnInit() {
     this.currentUID = this.auth.currentUser.uid;
-    this.rooms = this.chatService.getRooms();
-    this.rooms.subscribe(rooms => {
-      console.log(rooms);
+    this.chatService.getRooms().subscribe(() => {
+      console.log('there was an update');
+      this.chatService.getRoomNames().subscribe(names => {
+        console.log(names);
+        this.rooms = names;
+      });
     });
   }
 
-  signOut() {
-    this.auth.signOut().then(() => {
-      this.router.navigateByUrl('/', { replaceUrl: true });
+  async addChat() {
+    const chatModal = await this.modal.create({
+      component: AddChatPage
     });
+    await chatModal.present();
   }
 
 }
