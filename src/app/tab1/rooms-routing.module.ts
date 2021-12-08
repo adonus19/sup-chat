@@ -12,13 +12,13 @@ const redirectLoggedInToRooms = () => redirectLoggedInTo(['']);
 const routes: Routes = [
   {
     path: '',
-    component: RoomsPage,
-    ...canActivate(redirectUnauthorizedToLogin)
+    loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
+    // ...canActivate(redirectLoggedInToRooms)
   },
   {
-    path: 'login',
-    loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
-    ...canActivate(redirectLoggedInToRooms)
+    path: 'rooms',
+    component: RoomsPage,
+    // ...canActivate(redirectUnauthorizedToLogin)
   },
 ];
 
