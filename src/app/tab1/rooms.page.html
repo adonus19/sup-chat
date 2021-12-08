@@ -13,7 +13,7 @@
 
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-item *ngFor="let room of rooms">
+    <ion-item *ngFor="let room of rooms | async">
       <ion-label>{{ room }}</ion-label>
     </ion-item>
   </ion-list>

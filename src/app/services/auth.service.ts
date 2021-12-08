@@ -1,6 +1,8 @@
 import { Injectable, OnInit } from "@angular/core";
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from "@angular/fire/compat/firestore";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 export interface User {
   uid: string;
@@ -16,6 +18,10 @@ export class AuthService implements OnInit {
 
   private _currentUser: User;
 
+  get currentUser() {
+    return this._currentUser;
+  }
+
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore
@@ -27,10 +33,6 @@ export class AuthService implements OnInit {
 
   ngOnInit() {
     this.afAuth.setPersistence('local').then(() => { });
-  }
-
-  get currentUser() {
-    return this._currentUser;
   }
 
   async signUp({ email, password, firstName, lastName }): Promise<any> {
@@ -47,6 +49,15 @@ export class AuthService implements OnInit {
 
   signIn({ email, password }): Promise<any> {
     return this.afAuth.signInWithEmailAndPassword(email, password);
+  }
+
+  listenForUserUpdates(): Observable<string[]> {
+    return (this.afs.doc(`users/${this.currentUser.uid}`).valueChanges({ idField: 'uid' }) as Observable<User>)
+      .pipe(
+        map(user => {
+          return user.rooms;
+        })
+      );
   }
 
   signOut(): Promise<void> {

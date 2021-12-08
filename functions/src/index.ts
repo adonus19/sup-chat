@@ -11,11 +11,8 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 exports.getCollections = functions.https.onCall(async () => {
-  // const ref = admin.firestore().collection('rooms').listDocuments();
-  // ref.then(docs => {
-  //   docs.map(doc => doc.path);
-  // })
   const collections = await admin.firestore()
     .doc("rooms/CtG76RZ7LJ1ACjrmwBih").listCollections();
   return collections.map((col) => col.path);
 });
+

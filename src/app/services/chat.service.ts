@@ -72,19 +72,7 @@ export class ChatService {
   }
 
   getRooms(): Observable<any> {
-    // this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').snapshotChanges().subscribe(changes => {
-    //   console.log(changes);
-    //   console.log(changes.payload.data());
-    // });
     return this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').snapshotChanges();
-
-
-    // gets the path to every the chat room
-    // const collections = this.cloudFunctions.httpsCallable('getCollections');
-    // return collections('');
-
-    // returns the doc inside rooms collection
-    // return this.afs.collection('rooms').valueChanges({ idField: 'id' })
   }
 
   addChatMessage(msg: string, uid: string) {

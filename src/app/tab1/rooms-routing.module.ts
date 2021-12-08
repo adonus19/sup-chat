@@ -6,19 +6,19 @@ import { hasCustomClaim, redirectUnauthorizedTo, redirectLoggedInTo, canActivate
 import { RoomsPage } from './rooms.page';
 
 const adminOnly = () => hasCustomClaim('admin');
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['']);
-const redirectLoggedInToRooms = () => redirectLoggedInTo(['rooms']);
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
+const redirectLoggedInToRooms = () => redirectLoggedInTo(['']);
 
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
-    ...canActivate(redirectLoggedInToRooms)
-  },
-  {
-    path: 'rooms',
     component: RoomsPage,
     ...canActivate(redirectUnauthorizedToLogin)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('../login/login.module').then(m => m.LoginComponentModule),
+    ...canActivate(redirectLoggedInToRooms)
   },
 ];
 
