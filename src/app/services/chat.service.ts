@@ -3,7 +3,7 @@ import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import * as firebase from 'firebase/firestore';
 import { Observable } from "rxjs";
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { User } from "./auth.service";
 
 export interface Message {
@@ -20,7 +20,7 @@ export interface Message {
 })
 export class ChatService {
 
-  users: User[];
+  allUsers: User[];
   collectionPaths: string[];
 
   constructor(
@@ -46,10 +46,7 @@ export class ChatService {
           return batch.commit();
         }),
         switchMap(() => {
-          return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${name}`).add({
-            createdBy: uid,
-            users
-          });
+          return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${name}`).add({})
         })
       ).subscribe();
   }
@@ -71,47 +68,92 @@ export class ChatService {
     )
   }
 
-  subscribeToUserRooms() {
-
+  getUserRoomsObservables(rooms: string[], uid: string) {
+    const roomsObservables: { room: string; messages: Observable<Message[]> }[] = [];
+    for (const room of rooms) {
+      roomsObservables.push({
+        room,
+        messages: this.getChatMessages(room, uid)
+      })
+      // roomsObservables.push(
+      //   this.getChatMessages(room, uid)
+      // );
+    }
+    return roomsObservables;
   }
 
-  addChatMessage(msg: string, uid: string) {
-    return this.afs.collection('messages')
+  addChatMessage(msg: string, uid: string, room: string) {
+    console.log({ msg, from: uid, createdAt: firebase.serverTimestamp() });
+    return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`)
       .add({ msg, from: uid, createdAt: firebase.serverTimestamp() });
   }
 
-  getChatMessages(uid: string): Observable<Message[]> {
-    if (!this.users) {
-      return (this.afs.collection('messages', ref => ref.orderBy('createdAt'))
-        .valueChanges({ idField: 'id' }) as Observable<Message[]>).pipe(
-          map(messages => {
-            for (const m of messages) {
-              m.fromName = this.getUserFromMsg(m.from, this.users);
-              m.myMsg = m.from === uid;
-            }
-            return messages;
-          })
-        )
-    } else {
-      return this.getUsers().pipe(
-        switchMap(res => {
-          this.users = res;
-          return this.afs.collection('messages', ref => ref.orderBy('createdAt'))
-            .valueChanges({ idField: 'id' }) as Observable<Message[]>;
-        }),
-        map(messages => {
-          for (const m of messages) {
-            m.fromName = this.getUserFromMsg(m.from, this.users);
-            m.myMsg = m.from === uid;
-          }
-          return messages;
-        })
-      );
-    }
+  getChatMessages(room: string, uid: string) {
+    return (this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt'))
+      .valueChanges({ idField: 'id' }) as Observable<Message[]>)
+    // .pipe(
+    //   map(messages => {
+    //     console.log(messages);
+    //     for (const m of messages) {
+    //       m.fromName = this.getUserFromMsg(m.from, this.users);
+    //       m.myMsg = m.from === uid;
+    //     }
+    //     return messages;
+    //   })
+    // );
   }
 
-  getUsers() {
-    return this.afs.collection('users').valueChanges({ idField: 'uid' }) as Observable<User[]>;
+  // getChatMessages(uid: string): Observable<Message[]> {
+  //   if (!this.users) {
+  //     return (this.afs.collection('messages', ref => ref.orderBy('createdAt'))
+  //       .valueChanges({ idField: 'id' }) as Observable<Message[]>).pipe(
+  //         map(messages => {
+  //           for (const m of messages) {
+  //             m.fromName = this.getUserFromMsg(m.from, this.users);
+  //             m.myMsg = m.from === uid;
+  //           }
+  //           return messages;
+  //         })
+  //       )
+  //   } else {
+  //     return this.getUsers().pipe(
+  //       switchMap(res => {
+  //         this.users = res;
+  //         return this.afs.collection('messages', ref => ref.orderBy('createdAt'))
+  //           .valueChanges({ idField: 'id' }) as Observable<Message[]>;
+  //       }),
+  //       map(messages => {
+  //         for (const m of messages) {
+  //           m.fromName = this.getUserFromMsg(m.from, this.users);
+  //           m.myMsg = m.from === uid;
+  //         }
+  //         return messages;
+  //       })
+  //     );
+  //   }
+  // }
+
+  getAllUsers(uid: string): Observable<User[]> {
+    return (this.afs.collection('users', ref => ref.where('uid', '!=', uid)).valueChanges({ idField: 'uid' }) as Observable<User[]>)
+      .pipe(
+        tap(users => {
+          this.allUsers = users;
+        })
+      );
+  }
+
+  getChatSpecificUsers(room: string) {
+    console.log('called in route', room);
+    return this.afs.collection<User>('users', ref => ref.where('rooms', 'array-contains', room)).get()
+      .pipe(
+        map(data => {
+          const users: User[] = []
+          data.forEach(doc => {
+            users.push(doc.data());
+          });
+          return users;
+        })
+      )
   }
 
   private getUserFromMsg(msgFromId, users: User[]): string {

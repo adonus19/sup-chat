@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { Observable, Subscriber, Subscription } from 'rxjs';
 import { AuthService, User } from '../services/auth.service';
-import { ChatService } from '../services/chat.service';
+import { ChatService, Message } from '../services/chat.service';
 import { AddChatPage } from './add-chat/add-chat.page';
 
 @Component({
@@ -15,7 +15,9 @@ export class RoomsPage implements OnInit {
 
   @ViewChild(IonContent) content: IonContent;
 
-  rooms: Observable<string[]>;
+  userRoomsObservable: Observable<string[]>;
+  rooms: { room: string; messages: Message[] }[] = [];
+  // rooms: Observable<{ room: string; messages: Observable<Message[]>}>[];
   newMsg = '';
   currentUID: string;
 
@@ -28,7 +30,18 @@ export class RoomsPage implements OnInit {
 
   ngOnInit() {
     this.currentUID = this.auth.currentUser.uid;
-    this.rooms = this.auth.listenForUserUpdates();
+    this.userRoomsObservable = this.auth.listenForUserUpdates();
+    this.auth.listenForUserUpdates().subscribe(userRooms => {
+      const roomsMessages = this.chatService.getUserRoomsObservables(userRooms, this.currentUID);
+      const newRooms = [];
+      for (const room of roomsMessages) {
+        room.messages.subscribe(messages => {
+          newRooms.push({ room: room.room, messages });
+          // this.rooms.push({ room: room.room, messages });
+        });
+      }
+      this.rooms = newRooms;
+    });
   }
 
   async addChat() {

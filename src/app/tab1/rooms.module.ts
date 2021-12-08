@@ -6,6 +6,7 @@ import { RoomsPageRoutingModule } from './rooms-routing.module';
 import { RoomsPage } from './rooms.page';
 import { AddChatPage } from './add-chat/add-chat.page';
 import { ChatPage } from './chat/chat.page';
+import { ChatUserResolver } from '../resolvers/chat-user.resolver';
 
 @NgModule({
   imports: [

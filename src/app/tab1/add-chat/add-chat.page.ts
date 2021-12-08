@@ -18,7 +18,8 @@ export class AddChatPage {
     private auth: AuthService,
     private modal: ModalController
   ) {
-    this.chatService.getUsers().subscribe(users => {
+    const currentUID = this.auth.currentUser.uid;
+    this.chatService.getAllUsers(currentUID).subscribe(users => {
       this.users = users;
     });
   }
