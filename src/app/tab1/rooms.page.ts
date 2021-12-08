@@ -29,12 +29,6 @@ export class RoomsPage implements OnInit {
   ngOnInit() {
     this.currentUID = this.auth.currentUser.uid;
     this.rooms = this.auth.listenForUserUpdates();
-
-    // this.chatService.getRooms().subscribe(() => {
-    //   this.chatService.getRoomNames().subscribe(names => {
-    //     this.rooms = names;
-    //   });
-    // });
   }
 
   async addChat() {

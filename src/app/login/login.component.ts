@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
       .then(user => {
         console.log(user);
         loading.dismiss();
-        this.router.navigate(['tabs/rooms/rooms'], { replaceUrl: true });
+        this.router.navigate(['tabs'], { replaceUrl: true });
       },
         async err => {
           loading.dismiss();
@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
     this.auth.signIn(this.loginForm.value)
       .then(user => {
         loading.dismiss();
-        this.router.navigate(['tabs/rooms/rooms'], { replaceUrl: true });
+        this.router.navigate(['tabs'], { replaceUrl: true });
       },
         async err => {
           loading.dismiss();
