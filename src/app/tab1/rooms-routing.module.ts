@@ -4,6 +4,7 @@ import { hasCustomClaim } from '@angular/fire/compat/auth-guard';
 
 
 import { RoomsPage } from './rooms.page';
+import { ChatPage } from './chat/chat.page';
 
 const adminOnly = () => hasCustomClaim('admin');
 
@@ -12,6 +13,10 @@ const routes: Routes = [
     path: '',
     component: RoomsPage,
   },
+  {
+    path: ':id',
+    component: ChatPage
+  }
 ];
 
 @NgModule({

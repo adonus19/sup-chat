@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -17,16 +18,20 @@ export class ChatPage implements OnInit {
   messages: Observable<any[]>;
   newMsg = '';
   currentUID: string;
+  roomId: string;
 
   constructor(
     private auth: AuthService,
     private chatService: ChatService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location
   ) { }
 
   ngOnInit() {
-    this.currentUID = this.auth.currentUser.uid;
-    this.messages = this.chatService.getChatMessages(this.currentUID);
+    this.roomId = this.route.snapshot.paramMap.get('id');
+    // this.currentUID = this.auth.currentUser.uid;
+    // this.messages = this.chatService.getChatMessages(this.currentUID);
   }
 
   sendMessage() {
@@ -37,10 +42,8 @@ export class ChatPage implements OnInit {
       });
   }
 
-  signOut() {
-    this.auth.signOut().then(() => {
-      this.router.navigateByUrl('/', { replaceUrl: true });
-    });
+  goBack() {
+    this.location.back();
   }
 
 }

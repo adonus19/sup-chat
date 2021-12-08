@@ -13,7 +13,7 @@
 
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-item *ngFor="let room of rooms | async">
+    <ion-item *ngFor="let room of rooms | async" button (click)="goToChat(room)">
       <ion-label>{{ room }}</ion-label>
     </ion-item>
   </ion-list>

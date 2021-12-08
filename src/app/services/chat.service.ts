@@ -71,8 +71,8 @@ export class ChatService {
     )
   }
 
-  getRooms(): Observable<any> {
-    return this.afs.doc('rooms/CtG76RZ7LJ1ACjrmwBih').snapshotChanges();
+  subscribeToUserRooms() {
+
   }
 
   addChatMessage(msg: string, uid: string) {

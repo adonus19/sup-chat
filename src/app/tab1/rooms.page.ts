@@ -38,6 +38,10 @@ export class RoomsPage implements OnInit {
     await chatModal.present();
   }
 
+  goToChat(name: string) {
+    this.router.navigate([`tabs/rooms/${name}`]);
+  }
+
 }
 
 

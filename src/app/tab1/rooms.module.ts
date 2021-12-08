@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RoomsPageRoutingModule } from './rooms-routing.module';
 import { RoomsPage } from './rooms.page';
 import { AddChatPage } from './add-chat/add-chat.page';
+import { ChatPage } from './chat/chat.page';
 
 @NgModule({
   imports: [
@@ -13,7 +14,11 @@ import { AddChatPage } from './add-chat/add-chat.page';
     RoomsPageRoutingModule,
     FormsModule
   ],
-  declarations: [RoomsPage, AddChatPage],
+  declarations: [
+    RoomsPage,
+    AddChatPage,
+    ChatPage
+  ],
   providers: []
 })
 export class RoomsPageModule { }
