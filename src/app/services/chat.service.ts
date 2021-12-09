@@ -61,39 +61,34 @@ export class ChatService {
     )
   }
 
-  getUserRoomsObservables(rooms: string[], uid: string) {
+  getUserRoomsObservables(rooms: string[]) {
     const roomsObservables: { room: string; messages: Observable<Message[]> }[] = [];
     for (const room of rooms) {
       roomsObservables.push({
         room,
-        messages: this.getChatMessages(room, uid)
-      })
-      // roomsObservables.push(
-      //   this.getChatMessages(room, uid)
-      // );
+        messages: this.getLastMessage(room)
+      });
     }
     return roomsObservables;
   }
 
   addChatMessage(msg: string, uid: string, room: string) {
-    console.log({ msg, from: uid, createdAt: firebase.serverTimestamp() });
     return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`)
       .add({ msg, from: uid, createdAt: firebase.serverTimestamp() });
   }
 
-  getChatMessages(room: string, uid: string) {
+  getAllChatMessages(room: string) {
+    return this.afs.collection<Message>(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt')).get();
+  }
+
+  getChatMessages(room: string) {
     return (this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt'))
       .valueChanges({ idField: 'id' }) as Observable<Message[]>)
-    // .pipe(
-    //   map(messages => {
-    //     console.log(messages);
-    //     for (const m of messages) {
-    //       m.fromName = this.getUserFromMsg(m.from, this.users);
-    //       m.myMsg = m.from === uid;
-    //     }
-    //     return messages;
-    //   })
-    // );
+  }
+
+  getLastMessage(room: string) {
+    return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt').limitToLast(1))
+      .valueChanges({ idField: 'id' }) as Observable<Message[]>;
   }
 
   // getChatMessages(uid: string): Observable<Message[]> {

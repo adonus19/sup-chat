@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
 import { map } from 'rxjs/operators';
 import { User } from '../../models/user.model';
+import { Message } from '../../models/message.model';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -39,7 +40,30 @@ export class ChatPage implements OnInit, AfterViewInit {
       this.chatUsers = users.users;
     });
     this.currentUID = this.userService.currentUser.uid;
-    this.messages = this.chatService.getChatMessages(this.roomId, this.currentUID)
+
+    const allChatMessages: Message[] = [];
+
+    // gives back an Observable of all the messages but once all messages are in, subscriber closes
+    // figure out how to combine this with this.messages for the view
+    this.chatService.getAllChatMessages(this.roomId)
+      .pipe(
+        map(messages => {
+          messages.forEach(message => {
+            const m = message.data();
+            m.fromName = this.getUserFromMsg(m.from, this.chatUsers);
+            m.myMsg = m.from === this.currentUID;
+            allChatMessages.push(m);
+          })
+          // for (const m of messages) {
+          //   m.fromName = this.getUserFromMsg(m.from, this.chatUsers);
+          //   m.myMsg = m.from === this.currentUID;
+          // }
+          return allChatMessages;
+        })
+      )
+
+    // this will give me all messages everytime a new message is added, not just the new message
+    this.messages = this.chatService.getChatMessages(this.roomId)
       .pipe(
         map(messages => {
           for (const m of messages) {

@@ -17,6 +17,7 @@ export class RoomsPage implements OnInit {
 
   @ViewChild(IonContent) content: IonContent;
 
+  // rooms = [];
   rooms: { room: string; messages: Message[] }[] = [];
   newMsg = '';
   currentUID: string;
@@ -32,17 +33,54 @@ export class RoomsPage implements OnInit {
 
   ngOnInit() {
     this.currentUID = this.userService.currentUser.uid;
+
+    // get all of the user's rooms once and does not listen for changes
+    this.userService.getUserRooms().subscribe(async userRooms => {
+      console.log(userRooms);
+      this.roomNames = userRooms;
+
+      const roomsMessages = this.chatService.getUserRoomsObservables(userRooms);
+      const length = roomsMessages.length;
+      console.log(roomsMessages);
+      for (let x = 0; x < length; x++) {
+        this.rooms.push({
+          room: roomsMessages[x].room,
+          messages: []
+        });
+        roomsMessages[x].messages.subscribe(messages => {
+          console.log(messages);
+          this.rooms[x].messages = messages;
+        });
+        console.log(this.rooms);
+      }
+
+
+      // for (const room of roomsMessages) {
+      //   room.messages.subscribe(messages => {
+      //     console.log('room.messages updated');
+      //     this.rooms.push({ room: room.room, messages });
+      //   });
+      // }
+    });
+
+
     this.userService.listenForUserUpdates().subscribe(userRooms => {
-      console.log(userRooms)
-      const roomsMessages = this.chatService.getUserRoomsObservables(userRooms, this.currentUID);
-      const newRooms = [];
-      for (const room of roomsMessages) {
-        room.messages.subscribe(messages => {
-          // I'm setting up a new sub each time a new text comes through
-          newRooms.push({ room: room.room, messages });
+      console.log(userRooms);
+      console.log('roomNames Length', this.roomNames.length, 'userRooms length', userRooms.length);
+      const userRoomsLength = userRooms.length
+      // check if there is a new room
+      if (this.roomNames.length !== userRoomsLength) {
+        console.log('2 roomNames Length', this.roomNames.length, '2 userRoomsLength', userRoomsLength);
+        console.log('room', userRooms[userRoomsLength - 1]);
+        // if new room, subscribe to the new room
+        this.chatService.getLastMessage(userRooms[userRoomsLength - 1]).subscribe(messages => {
+          console.log('chatService.getLastMessage updated');
+          this.rooms.push({
+            room: userRooms[userRoomsLength - 1],
+            messages
+          });
         });
       }
-      this.rooms = newRooms;
     });
   }
 

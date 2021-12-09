@@ -23,11 +23,20 @@ export class UserService {
     private afs: AngularFirestore
   ) { }
 
+  getUserRooms(): Observable<string[]> {
+    return this.afs.doc<User>(`users/${this.currentUser.uid}`).get()
+      .pipe(
+        map(user => {
+          const data = user.data();
+          return data.rooms;
+        })
+      );
+  }
+
   listenForUserUpdates(): Observable<string[]> {
     return (this.afs.doc(`users/${this.currentUser.uid}`).valueChanges(['added', 'removed', { idField: 'uid' }]) as Observable<User>)
       .pipe(
         map(user => {
-          console.log(user);
           return user.rooms;
         })
       );
