@@ -3,31 +3,20 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-
-export interface User {
-  uid: string;
-  email: string;
-  displayName: string;
-  rooms?: string[];
-}
+import { UserService } from "./user.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService implements OnInit {
 
-  private _currentUser: User;
-
-  get currentUser() {
-    return this._currentUser;
-  }
-
   constructor(
     private afAuth: AngularFireAuth,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private userService: UserService
   ) {
     this.afAuth.onAuthStateChanged(user => {
-      this._currentUser = user;
+      this.userService.currentUser = user;
     });
   }
 
@@ -49,16 +38,6 @@ export class AuthService implements OnInit {
 
   signIn({ email, password }): Promise<any> {
     return this.afAuth.signInWithEmailAndPassword(email, password);
-  }
-
-  listenForUserUpdates(): Observable<string[]> {
-    return (this.afs.doc(`users/${this.currentUser.uid}`).valueChanges(['added', 'removed', { idField: 'uid' }]) as Observable<User>)
-      .pipe(
-        map(user => {
-          console.log(user);
-          return user.rooms;
-        })
-      );
   }
 
   signOut(): Promise<void> {

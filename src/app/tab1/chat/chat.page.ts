@@ -3,9 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { Observable } from 'rxjs';
-import { AuthService, User } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
 import { map } from 'rxjs/operators';
+import { User } from '../../models/user.model';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-chat',
@@ -27,7 +29,8 @@ export class ChatPage implements OnInit, AfterViewInit {
     private chatService: ChatService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location
+    private location: Location,
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -35,7 +38,7 @@ export class ChatPage implements OnInit, AfterViewInit {
     this.route.data.subscribe(users => {
       this.chatUsers = users.users;
     });
-    this.currentUID = this.auth.currentUser.uid;
+    this.currentUID = this.userService.currentUser.uid;
     this.messages = this.chatService.getChatMessages(this.roomId, this.currentUID)
       .pipe(
         map(messages => {

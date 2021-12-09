@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { AuthService, User } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { ModalController } from '@ionic/angular';
+import { User } from '../../models/user.model'
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-add-chat',
@@ -16,9 +18,10 @@ export class AddChatPage {
   constructor(
     private chatService: ChatService,
     private auth: AuthService,
-    private modal: ModalController
+    private modal: ModalController,
+    private userService: UserService
   ) {
-    const currentUID = this.auth.currentUser.uid;
+    const currentUID = this.userService.currentUser.uid;
     this.chatService.getAllUsers(currentUID).subscribe(users => {
       this.users = users;
     });
@@ -33,7 +36,7 @@ export class AddChatPage {
   }
 
   async createChatRoom() {
-    await this.chatService.addChatRoom(this.chatName, this.auth.currentUser.uid, this.selectedUsers);
+    await this.chatService.addChatRoom(this.chatName, this.userService.currentUser.uid, this.selectedUsers);
     this.modal.dismiss();
   }
 

@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, Resolve } from "@angular/router";
 import { Observable } from "rxjs";
 import { ChatService } from "../services/chat.service";
-import { User } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'

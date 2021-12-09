@@ -2,9 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { Observable, Subscriber, Subscription } from 'rxjs';
-import { AuthService, User } from '../services/auth.service';
-import { ChatService, Message } from '../services/chat.service';
+import { AuthService } from '../services/auth.service';
+import { ChatService } from '../services/chat.service';
+import { UserService } from '../services/user.service';
 import { AddChatPage } from './add-chat/add-chat.page';
+import { Message } from '../models/message.model';
 
 @Component({
   selector: 'app-tab1',
@@ -24,12 +26,13 @@ export class RoomsPage implements OnInit {
     private auth: AuthService,
     private chatService: ChatService,
     private router: Router,
-    private modal: ModalController
+    private modal: ModalController,
+    private userService: UserService
   ) { }
 
   ngOnInit() {
-    this.currentUID = this.auth.currentUser.uid;
-    this.auth.listenForUserUpdates().subscribe(userRooms => {
+    this.currentUID = this.userService.currentUser.uid;
+    this.userService.listenForUserUpdates().subscribe(userRooms => {
       console.log(userRooms)
       const roomsMessages = this.chatService.getUserRoomsObservables(userRooms, this.currentUID);
       const newRooms = [];

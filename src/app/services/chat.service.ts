@@ -4,16 +4,9 @@ import { AngularFireFunctions } from "@angular/fire/compat/functions";
 import * as firebase from 'firebase/firestore';
 import { Observable } from "rxjs";
 import { map, switchMap, tap } from 'rxjs/operators';
-import { User } from "./auth.service";
+import { User } from "../models/user.model";
+import { Message } from '../models/message.model';
 
-export interface Message {
-  createdAt: firebase.FieldValue,
-  id: string;
-  from: string;
-  msg: string;
-  fromName: string;
-  myMsg: boolean;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -154,15 +147,6 @@ export class ChatService {
           return users;
         })
       )
-  }
-
-  private getUserFromMsg(msgFromId, users: User[]): string {
-    for (const user of users) {
-      if (user.uid == msgFromId) {
-        return user.displayName;
-      }
-    }
-    return 'Deleted';
   }
 
   private updateUsersRooms(users: User[], chatName: string) {
