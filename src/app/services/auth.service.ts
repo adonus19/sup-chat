@@ -52,9 +52,10 @@ export class AuthService implements OnInit {
   }
 
   listenForUserUpdates(): Observable<string[]> {
-    return (this.afs.doc(`users/${this.currentUser.uid}`).valueChanges({ idField: 'uid' }) as Observable<User>)
+    return (this.afs.doc(`users/${this.currentUser.uid}`).valueChanges(['added', 'removed', { idField: 'uid' }]) as Observable<User>)
       .pipe(
         map(user => {
+          console.log(user);
           return user.rooms;
         })
       );

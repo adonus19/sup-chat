@@ -15,11 +15,10 @@ export class RoomsPage implements OnInit {
 
   @ViewChild(IonContent) content: IonContent;
 
-  userRoomsObservable: Observable<string[]>;
   rooms: { room: string; messages: Message[] }[] = [];
-  // rooms: Observable<{ room: string; messages: Observable<Message[]>}>[];
   newMsg = '';
   currentUID: string;
+  roomNames: string[] = [];
 
   constructor(
     private auth: AuthService,
@@ -30,14 +29,14 @@ export class RoomsPage implements OnInit {
 
   ngOnInit() {
     this.currentUID = this.auth.currentUser.uid;
-    this.userRoomsObservable = this.auth.listenForUserUpdates();
     this.auth.listenForUserUpdates().subscribe(userRooms => {
+      console.log(userRooms)
       const roomsMessages = this.chatService.getUserRoomsObservables(userRooms, this.currentUID);
       const newRooms = [];
       for (const room of roomsMessages) {
         room.messages.subscribe(messages => {
+          // I'm setting up a new sub each time a new text comes through
           newRooms.push({ room: room.room, messages });
-          // this.rooms.push({ room: room.room, messages });
         });
       }
       this.rooms = newRooms;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
   templateUrl: 'chat.page.html',
   styleUrls: ['chat.page.scss']
 })
-export class ChatPage implements OnInit {
+export class ChatPage implements OnInit, AfterViewInit {
 
   @ViewChild(IonContent) content: IonContent;
 
@@ -33,14 +33,12 @@ export class ChatPage implements OnInit {
   ngOnInit() {
     this.roomId = this.route.snapshot.paramMap.get('id');
     this.route.data.subscribe(users => {
-      console.log(users);
       this.chatUsers = users.users;
     });
     this.currentUID = this.auth.currentUser.uid;
     this.messages = this.chatService.getChatMessages(this.roomId, this.currentUID)
       .pipe(
         map(messages => {
-          console.log(messages);
           for (const m of messages) {
             m.fromName = this.getUserFromMsg(m.from, this.chatUsers);
             m.myMsg = m.from === this.currentUID;
@@ -48,6 +46,10 @@ export class ChatPage implements OnInit {
           return messages;
         })
       );
+  }
+
+  ngAfterViewInit(): void {
+    this.content.scrollToBottom();
   }
 
   sendMessage() {
@@ -64,7 +66,6 @@ export class ChatPage implements OnInit {
   }
 
   private getUserFromMsg(msgFromId: string, users: User[]): string {
-    console.log(users);
     for (const user of users) {
       if (user.uid == msgFromId) {
         return user.displayName;
