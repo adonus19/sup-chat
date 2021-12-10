@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
-import { Observable, Subscriber, Subscription } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 import { ChatService } from '../services/chat.service';
 import { UserService } from '../services/user.service';
 import { AddChatPage } from './add-chat/add-chat.page';
@@ -23,7 +21,6 @@ export class RoomsPage implements OnInit {
   roomNames: string[] = [];
 
   constructor(
-    private auth: AuthService,
     private chatService: ChatService,
     private router: Router,
     private modal: ModalController,
@@ -40,7 +37,7 @@ export class RoomsPage implements OnInit {
       const length = roomsMessages.length;
       for (let x = 0; x < length; x++) {
         this.rooms.push({
-          room: roomsMessages[x].room,
+          room: this.checkRoomNameAndFormat(roomsMessages[x].room),
           messages: []
         });
         roomsMessages[x].messages.subscribe(messages => {
@@ -57,7 +54,7 @@ export class RoomsPage implements OnInit {
         this.roomNames = userRooms;
         // if new room, subscribe to the new room
         this.rooms.push({
-          room: userRooms[userRoomsLength - 1],
+          room: this.checkRoomNameAndFormat(userRooms[userRoomsLength - 1]),
           messages: []
         });
         this.chatService.getLastMessage(userRooms[userRoomsLength - 1]).subscribe(messages => {
@@ -80,6 +77,18 @@ export class RoomsPage implements OnInit {
 
   goToChat(name: string) {
     this.router.navigate([`tabs/rooms/${name}`]);
+  }
+
+  private checkRoomNameAndFormat(name: string) {
+    const userName = this.userService.currentUser.displayName;
+    if (name.split(', ').length > 1) {
+      if (name.match(userName)) {
+        return name.replace(userName, '').replace(', ', '');
+      } else if (name.match(userName.split(' ')[0])) {
+        return name.replace(userName.split(' ')[0], 'Me');
+      }
+    }
+    return name;
   }
 
 }

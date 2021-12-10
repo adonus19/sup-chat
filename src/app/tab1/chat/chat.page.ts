@@ -37,14 +37,23 @@ export class ChatPage implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.route.data.subscribe(users => {
-      this.chatUsers = users.users;
+    this.route.data.subscribe((data: { users: User[] }) => {
+      this.roomId = this.route.snapshot.paramMap.get('id');
+      this.chatUsers = data.users;
       console.log(this.chatUsers);
-      if (this.chatUsers.length == 2) {
-        this.roomId = this.chatUsers[1].displayName;
-      } else {
-        this.roomId = this.route.snapshot.paramMap.get('id');
+      // if roomID matches device user and room users length is 2
+      // get the other user's name and use for room display name
+      // if roomID matched decive user and room users length is > 2
+      // take the first name of all users to display as room name
+      if (this.roomId.match(this.userService.currentUser.displayName) || this.roomId.match(this.userService.currentUser.displayName.split(' ')[0])) {
+        if (this.chatUsers.length == 2) {
+          this.roomId = this.roomId.replace(`${this.userService.currentUser.displayName}`, '').replace(',', '');
+        } else {
+          this.roomId = this.roomId.replace(`${this.userService.currentUser.displayName.split(' ')[0]}`, 'Me');
+        }
       }
+
+
     });
     this.currentUID = this.userService.currentUser.uid;
 
@@ -126,6 +135,16 @@ export class ChatPage implements OnInit, AfterViewInit {
     m.fromName = this.getUserFromMsg(m.from, this.chatUsers);
     m.myMsg = m.from === this.currentUID;
     return m;
+  }
+
+  private formatRoomName(allUsers: User[]) {
+    let roomName = '';
+    for (const user of allUsers) {
+      if (user.displayName.split(' ')[0] != this.userService.currentUser.displayName.split(' ')[0]) {
+        roomName += user.displayName.split(' ')[0];
+      }
+    }
+    return roomName;
   }
 
 }
