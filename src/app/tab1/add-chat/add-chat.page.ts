@@ -13,6 +13,7 @@ export class AddChatPage {
   users: User[];
   selectedUsers: User[] = [];
   chatName: string;
+  error = false;
 
   constructor(
     private chatService: ChatService,
@@ -26,7 +27,8 @@ export class AddChatPage {
     this.selectedUsers.push(this.userService.currentUser);
   }
 
-  addUser(event, user: User) {
+  addUser(event, user: User): void {
+    this.error = false;
     if (event.detail.value) {
       this.selectedUsers.push(user);
     } else {
@@ -34,13 +36,34 @@ export class AddChatPage {
     }
   }
 
-  async createChatRoom() {
-    await this.chatService.addChatRoom(this.chatName, this.userService.currentUser.uid, this.selectedUsers);
-    this.modal.dismiss({ roomName: this.chatName });
+  async createChatRoom(): Promise<void> {
+    if (this.selectedUsers.length < 2) {
+      this.error = true;
+      return;
+    } else {
+      this.error = false;
+      if (!this.chatName || this.chatName.trim() == '') {
+        this.chatName = this.buildRoomName();
+      }
+      await this.chatService.addChatRoom(this.chatName, this.userService.currentUser.uid, this.selectedUsers);
+      this.modal.dismiss({ roomName: this.chatName });
+    }
   }
 
-  cancel() {
+  cancel(): void {
     this.modal.dismiss();
+  }
+
+  private buildRoomName(): string {
+    let roomName = '';
+    const l = this.selectedUsers.length;
+    for (let x = 0; x < l; x++) {
+      roomName += this.selectedUsers[x].displayName.split(' ')[0];
+      if (x != l - 1) {
+        roomName += ', ';
+      }
+    }
+    return roomName;
   }
 
 }

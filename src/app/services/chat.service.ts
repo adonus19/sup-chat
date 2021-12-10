@@ -49,7 +49,6 @@ export class ChatService {
     const collections = this.cloudFunctions.httpsCallable('getCollections');
     return collections('').pipe(
       map(roomPaths => {
-        console.log(roomPaths);
         this.collectionPaths = roomPaths;
         let names = [];
         roomPaths.forEach(path => {
@@ -91,38 +90,7 @@ export class ChatService {
       .valueChanges({ idField: 'id' });
   }
 
-  // getChatMessages(uid: string): Observable<Message[]> {
-  //   if (!this.users) {
-  //     return (this.afs.collection('messages', ref => ref.orderBy('createdAt'))
-  //       .valueChanges({ idField: 'id' }) as Observable<Message[]>).pipe(
-  //         map(messages => {
-  //           for (const m of messages) {
-  //             m.fromName = this.getUserFromMsg(m.from, this.users);
-  //             m.myMsg = m.from === uid;
-  //           }
-  //           return messages;
-  //         })
-  //       )
-  //   } else {
-  //     return this.getUsers().pipe(
-  //       switchMap(res => {
-  //         this.users = res;
-  //         return this.afs.collection('messages', ref => ref.orderBy('createdAt'))
-  //           .valueChanges({ idField: 'id' }) as Observable<Message[]>;
-  //       }),
-  //       map(messages => {
-  //         for (const m of messages) {
-  //           m.fromName = this.getUserFromMsg(m.from, this.users);
-  //           m.myMsg = m.from === uid;
-  //         }
-  //         return messages;
-  //       })
-  //     );
-  //   }
-  // }
-
   getChatSpecificUsers(room: string) {
-    console.log('called in route', room);
     return this.afs.collection<User>('users', ref => ref.where('rooms', 'array-contains', room)).get()
       .pipe(
         map(data => {

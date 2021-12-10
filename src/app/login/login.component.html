@@ -33,7 +33,7 @@
         </ion-input>
       </ion-item>
       <div *ngIf="firstName.touched && firstName.errors" class="errors">
-        <span *ngIf="firstName.errors?.required">First name is required</span>
+        <span>First name is required</span>
       </div>
     </div>
 
@@ -44,7 +44,7 @@
         </ion-input>
       </ion-item>
       <div *ngIf="lastName.touched && lastName.errors" class="errors">
-        <span *ngIf="lastName.errors?.required">Last name is required</span>
+        <span>Last name is required</span>
       </div>
     </div>
   </form>

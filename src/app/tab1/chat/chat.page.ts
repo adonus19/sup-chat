@@ -37,9 +37,14 @@ export class ChatPage implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.roomId = this.route.snapshot.paramMap.get('id');
     this.route.data.subscribe(users => {
       this.chatUsers = users.users;
+      console.log(this.chatUsers);
+      if (this.chatUsers.length == 2) {
+        this.roomId = this.chatUsers[1].displayName;
+      } else {
+        this.roomId = this.route.snapshot.paramMap.get('id');
+      }
     });
     this.currentUID = this.userService.currentUser.uid;
 

@@ -18,10 +18,15 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
 
-  <ion-item class="ion-margin-bottom">
-    <ion-label position="floating">Chat Name</ion-label>
-    <ion-input clearInput [(ngModel)]="chatName"></ion-input>
-  </ion-item>
+  <div class="ion-margin-bottom">
+    <ion-item>
+      <ion-label position="floating">Chat Name (Optional)</ion-label>
+      <ion-input clearInput [(ngModel)]="chatName"></ion-input>
+    </ion-item>
+    <div *ngIf="error" class="errors">
+      <span>You forgot to add someone to chat with!</span>
+    </div>
+  </div>
 
   <ion-list>
     <ion-item *ngFor="let user of users; let i = index">

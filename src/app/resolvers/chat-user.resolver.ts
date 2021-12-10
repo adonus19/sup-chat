@@ -13,9 +13,7 @@ export class ChatUserResolver implements Resolve<any> {
   ) { }
 
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
-    console.log('called');
     const roomName = route.paramMap.get('id');
-    console.log(roomName);
     return this.chatService.getChatSpecificUsers(roomName);
   }
 }
