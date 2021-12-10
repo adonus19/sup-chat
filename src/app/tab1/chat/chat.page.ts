@@ -5,7 +5,7 @@ import { IonContent } from '@ionic/angular';
 import { concat, Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { User } from '../../models/user.model';
 import { Message } from '../../models/message.model';
 import { UserService } from 'src/app/services/user.service';
@@ -20,11 +20,12 @@ export class ChatPage implements OnInit, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
 
   // messages: Observable<any[]>;
-  messages: Message[];
+  messages: any[];
   newMsg = '';
   currentUID: string;
   roomId: string;
   chatUsers: User[];
+  firstRun = true;
 
   constructor(
     private auth: AuthService,
@@ -54,15 +55,20 @@ export class ChatPage implements OnInit, AfterViewInit {
             const m = this.addValues(message.data());
             texts.push(m);
           });
-          console.log(texts);
+          this.content.scrollToBottom();
           return texts;
         })
       )
       .subscribe(messages => {
         this.messages = messages;
+        this.content.scrollToBottom();
         this.chatService.getLastMessage(this.roomId)
           .pipe(
+            filter(messages => {
+              return messages[0].createdAt != null;
+            }),
             map(messages => {
+              this.content.scrollToBottom();
               for (let m of messages) {
                 m = this.addValues(m);
               }
@@ -70,15 +76,18 @@ export class ChatPage implements OnInit, AfterViewInit {
             })
           )
           .subscribe(messages => {
-            messages.forEach(message => {
-              // this is responding twice
-              // first with createdAt as null, then with the actaul value
-              // something is different about this call
-              // maybe try a timeout or see if there is something else that can be done
-              console.log(message);
-              this.messages.push(message);
-            });
+            this.content.scrollToBottom();
+            if (this.firstRun) {
+              this.firstRun = false;
+            } else {
+              messages.forEach(message => {
+                this.messages.push(message);
+              });
+              setTimeout(() => this.content.scrollToBottom(), 200);
+              this.content.scrollToBottom();
+            }
           });
+        this.content.scrollToBottom();
       });
   }
 
@@ -87,7 +96,6 @@ export class ChatPage implements OnInit, AfterViewInit {
   }
 
   sendMessage() {
-    console.log(this.newMsg, this.currentUID);
     this.chatService.addChatMessage(this.newMsg, this.currentUID, this.roomId)
       .then(() => {
         this.newMsg = '';
