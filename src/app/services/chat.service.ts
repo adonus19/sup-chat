@@ -82,13 +82,13 @@ export class ChatService {
   }
 
   getChatMessages(room: string) {
-    return (this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt'))
-      .valueChanges({ idField: 'id' }) as Observable<Message[]>)
+    return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt'))
+      .valueChanges({ idField: 'id' }) as Observable<Message[]>;
   }
 
   getLastMessage(room: string) {
-    return this.afs.collection(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt').limitToLast(1))
-      .valueChanges({ idField: 'id' }) as Observable<Message[]>;
+    return this.afs.collection<Message>(`rooms/CtG76RZ7LJ1ACjrmwBih/${room}`, ref => ref.orderBy('createdAt').limitToLast(1))
+      .valueChanges({ idField: 'id' });
   }
 
   // getChatMessages(uid: string): Observable<Message[]> {
