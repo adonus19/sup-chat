@@ -36,7 +36,7 @@ export class AddChatPage {
 
   async createChatRoom() {
     await this.chatService.addChatRoom(this.chatName, this.userService.currentUser.uid, this.selectedUsers);
-    this.modal.dismiss();
+    this.modal.dismiss({ roomName: this.chatName });
   }
 
   cancel() {

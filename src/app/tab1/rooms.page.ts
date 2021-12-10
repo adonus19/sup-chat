@@ -51,7 +51,6 @@ export class RoomsPage implements OnInit {
 
 
     this.userService.listenForUserRoomUpdates().subscribe(userRooms => {
-      console.log('listenForUserRoomUpdates called', userRooms);
       const userRoomsLength = userRooms.length
       // check if there is a new room
       if (this.roomNames.length !== userRoomsLength) {
@@ -73,6 +72,10 @@ export class RoomsPage implements OnInit {
       component: AddChatPage
     });
     await chatModal.present();
+    const { data } = await chatModal.onDidDismiss();
+    if (data) {
+      this.router.navigate([`tabs/rooms/${data.roomName}`]);
+    }
   }
 
   goToChat(name: string) {
