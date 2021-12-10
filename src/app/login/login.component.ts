@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit {
     await loading.present();
 
     this.auth.signIn(this.loginForm.value)
-      .then(user => {
+      .then(() => {
         loading.dismiss();
         this.router.navigate(['tabs'], { replaceUrl: true });
       },
@@ -90,6 +90,25 @@ export class LoginComponent implements OnInit {
           });
           await alert.present();
         });
+  }
+
+  async signInWithGoogle() {
+    const loading = await this.loader.create();
+    await loading.present();
+    this.auth.googleSignIn().then(value => {
+      console.log(value);
+      loading.dismiss();
+      this.router.navigate(['tabs'], { replaceUrl: true });
+    },
+      async err => {
+        loading.dismiss();
+        const alert = await this.alertController.create({
+          header: 'Login failed',
+          message: err.message,
+          buttons: ['Ok']
+        });
+        await alert.present();
+      });
   }
 
   loginOrSignUp() {

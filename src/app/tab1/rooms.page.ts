@@ -19,6 +19,7 @@ export class RoomsPage implements OnInit {
   rooms: { room: string; messages: Message[] }[] = [];
   newMsg = '';
   roomNames: string[] = [];
+  userImage = '';
 
   constructor(
     private chatService: ChatService,
@@ -28,38 +29,41 @@ export class RoomsPage implements OnInit {
   ) { }
 
   ngOnInit() {
-
     // get all of the user's rooms once and does not listen for changes
     this.userService.getUserRooms().subscribe(async userRooms => {
+      this.userImage = this.userService.currentUser.photoURL;
       this.roomNames = userRooms;
-
-      const roomsMessages = this.chatService.getUserRoomsObservables(userRooms);
-      const length = roomsMessages.length;
-      for (let x = 0; x < length; x++) {
-        this.rooms.push({
-          room: this.checkRoomNameAndFormat(roomsMessages[x].room),
-          messages: []
-        });
-        roomsMessages[x].messages.subscribe(messages => {
-          this.rooms[x].messages = messages;
-        });
+      if (this.roomNames) {
+        const roomsMessages = this.chatService.getUserRoomsObservables(userRooms);
+        const length = roomsMessages.length;
+        for (let x = 0; x < length; x++) {
+          this.rooms.push({
+            room: this.checkRoomNameAndFormat(roomsMessages[x].room),
+            messages: []
+          });
+          roomsMessages[x].messages.subscribe(messages => {
+            this.rooms[x].messages = messages;
+          });
+        }
       }
     });
 
 
     this.userService.listenForUserRoomUpdates().subscribe(userRooms => {
-      const userRoomsLength = userRooms.length
-      // check if there is a new room
-      if (this.roomNames.length !== userRoomsLength) {
-        this.roomNames = userRooms;
-        // if new room, subscribe to the new room
-        this.rooms.push({
-          room: this.checkRoomNameAndFormat(userRooms[userRoomsLength - 1]),
-          messages: []
-        });
-        this.chatService.getLastMessage(userRooms[userRoomsLength - 1]).subscribe(messages => {
-          this.rooms[userRoomsLength - 1].messages.push(messages[0]);
-        });
+      if (userRooms.length) {
+        const userRoomsLength = userRooms.length
+        // check if there is a new room
+        if (this.roomNames.length !== userRoomsLength) {
+          this.roomNames = userRooms;
+          // if new room, subscribe to the new room
+          this.rooms.push({
+            room: this.checkRoomNameAndFormat(userRooms[userRoomsLength - 1]),
+            messages: []
+          });
+          this.chatService.getLastMessage(userRooms[userRoomsLength - 1]).subscribe(messages => {
+            this.rooms[userRoomsLength - 1].messages.push(messages[0]);
+          });
+        }
       }
     });
   }
@@ -96,9 +100,6 @@ export class RoomsPage implements OnInit {
 
 // 1. see what collections[0].id gets me
     // returns the name of the collection (its name is its ID)
-// 2. have getCollections return a list of rooms that the user has access to
-// 3. figure out how to subscribe to chat rooms
-// 4. Enter chat rooms
 // 5. check on DB rules to see if access can be added that way or if I should stick with rooms array
 
 // Other things to consider

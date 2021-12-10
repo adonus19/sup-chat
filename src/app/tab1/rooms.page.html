@@ -1,5 +1,12 @@
 <ion-header [translucent]="true" collapse="condense">
   <ion-toolbar>
+    <ion-buttons *ngIf="userImage" slot="start">
+      <ion-button fill="clear">
+        <ion-avatar slot="start">
+          <img [src]="userImage" alt="The user's image" referrerpolicy="no-referrer">
+        </ion-avatar>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       Sup Chat Rooms
     </ion-title>

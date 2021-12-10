@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content class="ion-padding bottom-btn">
-  <form [formGroup]="loginForm">
+  <form [formGroup]="loginForm" class="input-group">
     <ion-item>
       <ion-label position="floating">Email</ion-label>
       <ion-input placeholder="example@gmail.com" formControlName="email" autofocus="true" clearInput="true"
@@ -51,4 +51,9 @@
 
   <ion-button (click)="onSubmit()" expand="block" class="top-btn">{{ btnText }}</ion-button>
   <ion-button fill="clear" (click)="loginOrSignUp()">{{ signUpOrLoginText }}</ion-button>
+
+  <ion-button type="button" expand="block" color="tertiary" (click)="signInWithGoogle()">
+    <ion-icon name="logo-google" slot="start"></ion-icon>
+    Sign in with Google
+  </ion-button>
 </ion-content>

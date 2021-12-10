@@ -57,11 +57,15 @@ export class AddChatPage {
   private buildRoomName(): string {
     let roomName = '';
     const l = this.selectedUsers.length;
-    for (let x = 0; x < l; x++) {
-      roomName += this.selectedUsers[x].displayName.split(' ')[0];
-      if (x != l - 1) {
-        roomName += ', ';
+    if (l > 2) {
+      for (let x = 0; x < l; x++) {
+        roomName += this.selectedUsers[x].displayName.split(' ')[0];
+        if (x != l - 1) {
+          roomName += ', ';
+        }
       }
+    } else {
+      roomName += `${this.selectedUsers[0]}, ${this.selectedUsers[1]}`;
     }
     return roomName;
   }
