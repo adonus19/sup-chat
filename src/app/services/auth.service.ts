@@ -15,8 +15,11 @@ export class AuthService implements OnInit {
     private afs: AngularFirestore,
     private userService: UserService
   ) {
-    this.afAuth.onAuthStateChanged(user => {
-      this.userService.currentUser = user;
+    this.afAuth.onAuthStateChanged(authUser => {
+      this.userService.currentUser = authUser;
+      this.userService.getUserDocObject().subscribe(user => {
+        this.userService.currentUser = user;
+      });
     });
   }
 

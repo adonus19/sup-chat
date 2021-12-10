@@ -20,7 +20,6 @@ export class RoomsPage implements OnInit {
   // rooms = [];
   rooms: { room: string; messages: Message[] }[] = [];
   newMsg = '';
-  currentUID: string;
   roomNames: string[] = [];
 
   constructor(
@@ -32,7 +31,6 @@ export class RoomsPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.currentUID = this.userService.currentUser.uid;
 
     // get all of the user's rooms once and does not listen for changes
     this.userService.getUserRooms().subscribe(async userRooms => {
@@ -52,16 +50,19 @@ export class RoomsPage implements OnInit {
     });
 
 
-    this.userService.listenForUserUpdates().subscribe(userRooms => {
+    this.userService.listenForUserRoomUpdates().subscribe(userRooms => {
+      console.log('listenForUserRoomUpdates called', userRooms);
       const userRoomsLength = userRooms.length
       // check if there is a new room
       if (this.roomNames.length !== userRoomsLength) {
+        this.roomNames = userRooms;
         // if new room, subscribe to the new room
+        this.rooms.push({
+          room: userRooms[userRoomsLength - 1],
+          messages: []
+        });
         this.chatService.getLastMessage(userRooms[userRoomsLength - 1]).subscribe(messages => {
-          this.rooms.push({
-            room: userRooms[userRoomsLength - 1],
-            messages
-          });
+          this.rooms[userRoomsLength - 1].messages.push(messages[0]);
         });
       }
     });

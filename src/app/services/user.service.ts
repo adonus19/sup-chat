@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { User } from "../models/user.model";
 
 @Injectable({
@@ -9,6 +9,7 @@ import { User } from "../models/user.model";
 })
 export class UserService {
 
+  allUsers: User[];
   private _currentUser: User;
 
   get currentUser() {
@@ -23,6 +24,24 @@ export class UserService {
     private afs: AngularFirestore
   ) { }
 
+  getUserDocObject(): Observable<User> {
+    return this.afs.doc<User>(`users/${this.currentUser.uid}`).get()
+      .pipe(
+        map(user => {
+          return user.data();
+        })
+      );
+  }
+
+  getAllUsers(uid: string): Observable<User[]> {
+    return (this.afs.collection('users', ref => ref.where('uid', '!=', uid)).valueChanges({ idField: 'uid' }) as Observable<User[]>)
+      .pipe(
+        tap(users => {
+          this.allUsers = users;
+        })
+      );
+  }
+
   getUserRooms(): Observable<string[]> {
     return this.afs.doc<User>(`users/${this.currentUser.uid}`).get()
       .pipe(
@@ -33,7 +52,7 @@ export class UserService {
       );
   }
 
-  listenForUserUpdates(): Observable<string[]> {
+  listenForUserRoomUpdates(): Observable<string[]> {
     return (this.afs.doc(`users/${this.currentUser.uid}`).valueChanges(['added', 'removed', { idField: 'uid' }]) as Observable<User>)
       .pipe(
         map(user => {

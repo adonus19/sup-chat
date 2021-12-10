@@ -121,15 +121,6 @@ export class ChatService {
   //   }
   // }
 
-  getAllUsers(uid: string): Observable<User[]> {
-    return (this.afs.collection('users', ref => ref.where('uid', '!=', uid)).valueChanges({ idField: 'uid' }) as Observable<User[]>)
-      .pipe(
-        tap(users => {
-          this.allUsers = users;
-        })
-      );
-  }
-
   getChatSpecificUsers(room: string) {
     console.log('called in route', room);
     return this.afs.collection<User>('users', ref => ref.where('rooms', 'array-contains', room)).get()

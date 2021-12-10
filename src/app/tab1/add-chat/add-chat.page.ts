@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { ModalController } from '@ionic/angular';
 import { User } from '../../models/user.model'
@@ -17,14 +16,14 @@ export class AddChatPage {
 
   constructor(
     private chatService: ChatService,
-    private auth: AuthService,
     private modal: ModalController,
     private userService: UserService
   ) {
     const currentUID = this.userService.currentUser.uid;
-    this.chatService.getAllUsers(currentUID).subscribe(users => {
+    this.userService.getAllUsers(currentUID).subscribe(users => {
       this.users = users;
     });
+    this.selectedUsers.push(this.userService.currentUser);
   }
 
   addUser(event, user: User) {

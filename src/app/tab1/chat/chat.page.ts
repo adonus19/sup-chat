@@ -62,13 +62,15 @@ export class ChatPage implements OnInit, AfterViewInit {
       .subscribe(messages => {
         this.messages = messages;
         this.content.scrollToBottom();
+        if (messages.length == 0) {
+          this.firstRun = false;
+        }
         this.chatService.getLastMessage(this.roomId)
           .pipe(
             filter(messages => {
-              return messages[0].createdAt != null;
+              if (messages[0]) return messages[0].createdAt != null
             }),
             map(messages => {
-              this.content.scrollToBottom();
               for (let m of messages) {
                 m = this.addValues(m);
               }
@@ -76,7 +78,6 @@ export class ChatPage implements OnInit, AfterViewInit {
             })
           )
           .subscribe(messages => {
-            this.content.scrollToBottom();
             if (this.firstRun) {
               this.firstRun = false;
             } else {
