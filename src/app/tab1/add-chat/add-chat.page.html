@@ -30,12 +30,12 @@
 
   <ion-list>
     <ion-item *ngFor="let user of users; let i = index">
-      <ion-avatar slot="start">
-        <img *ngIf="user.photoURL; else icon" [src]="user.photoURL" alt="The user's image" referrerpolicy="no-referrer">
-        <ng-template #icon>
-          <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-        </ng-template>
+      <ion-avatar *ngIf="user.photoURL; else icon" slot="start">
+        <img [src]="user.photoURL" alt="The user's image" referrerpolicy="no-referrer">
       </ion-avatar>
+      <ng-template #icon>
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+      </ng-template>
       <ion-label>{{ user.displayName | titlecase}}</ion-label>
       <ion-radio-group allowEmptySelection="true" (ionChange)="addUser($event, user)">
         <ion-radio slot="end" value="true"></ion-radio>
