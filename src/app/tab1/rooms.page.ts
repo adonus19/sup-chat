@@ -83,6 +83,10 @@ export class RoomsPage implements OnInit {
     this.router.navigate([`tabs/rooms/${name}`]);
   }
 
+  goToEditProfile() {
+    this.router.navigate([`tabs/rooms/users/${this.userService.currentUser.displayName}`]);
+  }
+
   private checkRoomNameAndFormat(name: string) {
     const userName = this.userService.currentUser.displayName;
     if (name.split(', ').length > 1) {

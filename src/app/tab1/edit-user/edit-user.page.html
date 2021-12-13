@@ -1,0 +1,33 @@
+<ion-header [translucent]="true" collapse="condense">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="cancel()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Profile Edit
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        Done
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <ion-row class="ion-justify-content-center">
+      <ion-avatar *ngIf="user.photoURL; else icon">
+        <img [src]="user.photoURL">
+      </ion-avatar>
+      <ng-template #icon>
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ng-template>
+    </ion-row>
+    <ion-row class="ion-justify-content-center">
+      <h3>{{ user.displayName }}</h3>
+    </ion-row>
+  </ion-grid>
+</ion-content>
